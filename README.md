@@ -1,4 +1,5 @@
 Is Hillary Clinton the President?
 ---------------------------------
 
-We shall see.
+[ishillaryclintonthepresident.com](http://ishillaryclintonthepresident.com)
+[ishillarythepresident.com](http://ishillarythepresident.com)
