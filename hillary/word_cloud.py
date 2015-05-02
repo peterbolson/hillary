@@ -5,13 +5,18 @@ from collections import defaultdict
 import requests
 from bs4 import BeautifulSoup
 
-url = "https://www.hillaryclinton.com/"
+urls = ["https://www.hillaryclinton.com/",
+        "https://www.hillaryclinton.com/about/bio/"]
 
 class WordCloudScraper:
 
     def __init__(self):
-        html = requests.get(url).text
-        self.soup = BeautifulSoup(html)
+        raw_texts = []
+        for url in urls:
+            html = requests.get(url).text
+            soup = BeautifulSoup(html)
+            raw_texts.append(soup.findAll(text=True))
+        self.raw_texts = raw_texts
         self.stopwords = ["a", "about", "above", "after", "again",
                 "against", "all", "am", "an", "and", "any",
                 "are", "aren't", "as", "at", "be", "because",
@@ -44,15 +49,15 @@ class WordCloudScraper:
                 "yours", "yourself", "yourselves"]
 
     def word_counts(self):
-        texts = self.soup.findAll(text=True)
-        visible_texts = filter(self.visible,texts)
-        words = [t.translate({ord(char): None for char in u'!"#%\'()*+,-./:;<=>?@[\]^_`{|}~'})
-                 for text in visible_texts
-                 for t in text.split()
-                 if t not in self.stopwords]
         counts = defaultdict(lambda: 0)
-        for word in words:
-            counts[word] += 1
+        for texts in self.raw_texts:
+            visible_texts = filter(self.visible,texts)
+            words = [t.lower().translate({ord(char): None for char in u'!"#%\'()*+,-./:;<=>?@[\]^_`{|}~'})
+                     for text in visible_texts
+                     for t in text.split()
+                     if t.lower() not in self.stopwords]
+            for word in words:
+                counts[word] += 1
         counts = sorted(list(counts.items()), key=lambda x: x[1],reverse=True)
         return counts
 
